@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux'
 function Header() {
   // to get wishlist count from store
   const userWishlist = useSelector(state=>state.wishlistReducer)
+  const userCart = useSelector(state=>state.cartReducer)
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container>
@@ -22,7 +24,7 @@ function Header() {
           </Nav.Link>
           <Nav.Link as={Link} to="/cart" className="fw-bold">
             <FontAwesomeIcon icon={faCartShopping} className='me-2' />
-            CART <Badge bg="secondary" className='ms-1'>0</Badge>
+            CART <Badge bg="secondary" className='ms-1'>{userCart.length}</Badge>
           </Nav.Link>
           </Nav>
         </Navbar.Collapse>

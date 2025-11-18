@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCartPlus,faStar } from '@fortawesome/free-solid-svg-icons'
+import { faStar } from '@fortawesome/free-solid-svg-icons'
 import { useParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addToWishlist } from '../redux/slices/wishlistSlice'
 import Swal from 'sweetalert2'
+import { addToCart } from '../redux/slices/cartSlice'
 
 function View() {
 // get path parameter from url
@@ -15,6 +16,7 @@ const {id} = useParams()
 const [product,setProduct] = useState({})
 const dispatch = useDispatch()
 const userWishlist = useSelector(state=>state.wishlistReducer)
+const userCart = useSelector(state=>state.cartReducer)
 //console.log(product);
 
 
@@ -34,11 +36,22 @@ const handleAddToWishlist = ()=>{
   title: 'Error!',
   text: 'sorry!! product already in your wishlist',
   icon: 'error',
-  confirmButtonText: 'Cool'
+  confirmButtonText: 'OK'
 })
   }else{
     dispatch(addToWishlist(product))
   }
+}
+
+const handleAddToCart = ()=>{
+  const existingProduct = userCart?.find(item=>item.id==id)
+  dispatch(addToCart(product))
+    Swal.fire({
+  title: 'sucess!',
+  text: existingProduct ? `Quntity of ${product.title},updated in your cart`:"product added to your cart",
+  icon: 'sucess',
+  confirmButtonText: 'OK'
+  })
 }
 
   return (
@@ -50,7 +63,7 @@ const handleAddToWishlist = ()=>{
             <img className='img-fluid' src={product?.thumbnail} alt=""></img>
             <div className='d-flex justify-content-evenly mt-5'>
               <button onClick={handleAddToWishlist} className='btn btn-primary'>ADD TO WISHLIST</button>
-              <button className='btn btn-primary'>ADD TO CART</button>
+              <button onClick={handleAddToCart} className='btn btn-primary'>ADD TO CART</button>
             </div>
           </div>
           <div className='col-md-6'>

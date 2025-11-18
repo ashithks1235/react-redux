@@ -3,12 +3,29 @@ import Header from '../components/Header'
 import { Card } from 'react-bootstrap'
 import { faCartPlus, faHeartCircleXmark, } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { removeWishlist } from '../redux/slices/wishlistSlice'
+import Swal from 'sweetalert2'
+import { addToCart } from '../redux/slices/cartSlice'
 
 function Wishlist() {
 
+const userCart = useSelector(state=>state.cartReducer)
 const userWishlist = useSelector(state=>state.wishlistReducer)
+const dispatch = useDispatch()
+
+const handleAddToCart = (product)=>{
+  const existingProduct = userCart?.find(item=>item.id==product.id)
+  dispatch(addToCart(product))
+  dispatch(removeWishlist(product.id))
+    Swal.fire({
+  title: 'sucess!',
+  text: existingProduct ? `Quntity of ${product.title},updated in your cart`:"product added to your cart",
+  icon: 'sucess',
+  confirmButtonText: 'OK'
+  })
+}
 
   return (
     <>
@@ -27,8 +44,8 @@ const userWishlist = useSelector(state=>state.wishlistReducer)
             <Card.Body className='text-center'>
               <Card.Title>{product?.title}</Card.Title>
               <div className="d-flex justify-content-evenly">
-                <button className='btn text-danger'><FontAwesomeIcon icon={faHeartCircleXmark} /></button>
-                <button className='btn text-sucess'><FontAwesomeIcon icon={faCartPlus} /></button>
+                <button onClick={()=>dispatch(removeWishlist(product?.id))} className='btn text-danger'><FontAwesomeIcon icon={faHeartCircleXmark} /></button>
+                <button onClick={()=>handleAddToCart(product)} className='btn text-sucess'><FontAwesomeIcon icon={faCartPlus} /></button>
               </div>
             </Card.Body>
           </Card>
