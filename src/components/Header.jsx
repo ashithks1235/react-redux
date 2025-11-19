@@ -3,9 +3,11 @@ import { Navbar,Container,Nav,Badge } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTruckFast,faHeart,faCartShopping } from '@fortawesome/free-solid-svg-icons'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+import { search } from '../redux/slices/productSlice'
 
 function Header() {
+  const dispatch = useDispatch()
   // to get wishlist count from store
   const userWishlist = useSelector(state=>state.wishlistReducer)
   const userCart = useSelector(state=>state.cartReducer)
@@ -17,7 +19,8 @@ function Header() {
         <FontAwesomeIcon icon={faTruckFast} className='me-2 text-dark'/>DailyCart</Link></Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="ms-auto">
+          <Nav className="ms-auto align-items-center">
+            <Nav.Item><input onChange={e=>dispatch(search(e.target.value))} type="text" className="form-control" /></Nav.Item>
             <Nav.Link as={Link} to="/wishlist" className="fw-bold">
             <FontAwesomeIcon icon={faHeart} className='me-2' />
             WISHLIST <Badge bg="secondary" className='ms-1'>{userWishlist.length}</Badge>

@@ -1,15 +1,42 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from '../components/Header'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useDispatch, useSelector } from 'react-redux'
-import { removeCartItem } from '../redux/slices/cartSlice'
+import { decrementCartItem, incrementCartItem, removeCartItem,emptyCart } from '../redux/slices/cartSlice'
+import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
 
 function Cart() {
 
+const navigate = useNavigate()
 const userCart = useSelector(state=>state.cartReducer)
 const dispatch = useDispatch()
+const [sum,setSum] = useState(0)
+
+useEffect(()=>{
+  setSum(userCart?.reduce((acc,curr)=>acc+curr.totalPrice,0))
+},[userCart])
+
+const handleDecrementCart = (product)=>{
+  if(product.quantity>1){
+    dispatch(decrementCartItem(product.id))
+  }else{
+    dispatch(removeCartItem(product.id))
+  }
+}
+
+const checkout = ()=>{
+  Swal.fire({
+    title: 'shopping completed!',
+    text: 'thank you for shopping with us',
+    icon: 'sucess',
+    confirmButtonText: 'OK'
+    })
+    dispatch(emptyCart())
+    Navigate('/')
+}
 
   return (
     <>
@@ -40,9 +67,9 @@ const dispatch = useDispatch()
                   <td><img width={'50px'} height={'50px'} src={product?.thumbnail} alt=''></img></td>
                   <td>
                     <div className='d-flex'>
-                      <button className='btn fs-3'>-</button>
+                      <button onClick={()=>handleDecrementCart(product)} className='btn fs-3'>-</button>
                       <input style={{width:'50px'}} type='text' value={product?.quantity} className='form-control' readOnly></input>
-                      <button className='btn fs-3'>+</button>
+                      <button onClick={()=>dispatch(incrementCartItem(product?.id))} className='btn fs-3'>+</button>
                     </div>
                   </td>
                   <td>$ {product?.totalPrice}</td>
@@ -53,16 +80,16 @@ const dispatch = useDispatch()
               </tbody>
             </table>
             <div className='float-end mt-3'>
-              <button className='btn btn-danger me-5'>EMPTY CART</button>
+              <button onClick={()=>dispatch(emptyCart())} className='btn btn-danger me-5'>EMPTY CART</button>
               <Link to={'/'} className='btn btn-primary'>SHOP MORE</Link>
             </div>
           </div>
           <div className="col-md-4">
             <div className="border p-5 rounded shadow">
-              <h3>Total Amount: <span className='text-danger'>$ 19.99</span></h3>
+              <h3>Total Amount: <span className='text-danger'>$ {sum}</span></h3>
               <hr/>
               <div className="d-grid">
-                <button className='btn btn-success'>CHECKOUT</button>
+                <button onClick={checkout} className='btn btn-success'>CHECKOUT</button>
               </div>
             </div>
           </div>
